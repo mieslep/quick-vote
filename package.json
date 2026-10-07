@@ -1,0 +1,17 @@
+{
+  "name": "quick-vote",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/irv.test.mjs",
+    "db:local": "cd worker && wrangler d1 execute quick-vote --local --file=schema.sql",
+    "dev:worker": "cd worker && wrangler dev --local --ip 0.0.0.0",
+    "dev:site": "python3 -m http.server 8000"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  },
+  "overrides": {
+    "sharp": "0.35.5"
+  }
+}
