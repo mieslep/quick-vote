@@ -1,0 +1,19 @@
+# Quick Vote with Docker Compose or Podman Compose.
+#   1. Make a file named .env next to this one, with a line:  CREATE_CODE=<a long random string>
+#   2. docker compose up -d        (or: podman compose up -d)
+#   3. Open http://localhost:8080
+# See DOCKER.md.
+services:
+  quick-vote:
+    build: .
+    image: quick-vote
+    ports:
+      - "8080:8080"
+    environment:
+      CREATE_CODE: ${CREATE_CODE:-}
+    volumes:
+      - quick-vote-data:/data
+    restart: unless-stopped
+
+volumes:
+  quick-vote-data:

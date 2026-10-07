@@ -9,7 +9,9 @@
     "dev:worker": "cd worker && wrangler dev --local --ip 0.0.0.0",
     "dev:site": "python3 -m http.server 8000",
     "test:browser": "node test/browser/run-all.mjs",
-    "test:all": "npm test && npm run test:browser"
+    "test:all": "npm test && npm run test:browser && npm run test:browser:node",
+    "test:browser:node": "node test/browser/run-all.mjs --node",
+    "start": "node --disable-warning=ExperimentalWarning server/index.mjs"
   },
   "devDependencies": {
     "jsdom": "^29.1.1",

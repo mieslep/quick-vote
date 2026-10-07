@@ -1,0 +1,14 @@
+.git
+node_modules
+data
+worker/.wrangler
+worker/.env
+worker/.dev.vars
+.env
+.env.*
+test
+scripts
+*.md
+LICENSE
+Dockerfile
+compose.yaml

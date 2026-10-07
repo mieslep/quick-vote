@@ -23,10 +23,10 @@ With ranked-choice voting, a voter says which option they like best, and which t
 |---|---|---|
 | Good for | One class or one room | Many classes, rooms or sites |
 | Voters use | One shared device | A device in each group |
-| Needs a server | No | Yes (a Cloudflare account; the free plan is usually enough) |
+| Needs a server | No | Yes (on Cloudflare, or your own machine with Docker or Podman) |
 | Needs a network | Only to load the site once | Each booth needs a signal to open and to send votes |
 | Result | On the device | The total of all booths, with a result for each booth |
-| Set up | None | About 20 minutes, once: see [INSTALLING.md](INSTALLING.md) |
+| Set up | None | Once: [INSTALLING.md](INSTALLING.md) (Cloudflare) or [DOCKER.md](DOCKER.md) (Docker or Podman) |
 
 ### Single-booth poll
 
@@ -43,7 +43,9 @@ Pass the device around. Each voter taps the choices in order and presses **Cast 
 
 Many groups vote at the same time, each on its own device. A server that you control (the *voting centre*) adds up all the votes.
 
-1. **Set up once.** Follow [INSTALLING.md](INSTALLING.md). It takes about 20 minutes. It needs a Cloudflare account. The free plan is usually enough.
+1. **Set up once.** Choose how to host the voting centre:
+   - On **Cloudflare**: follow [INSTALLING.md](INSTALLING.md). It takes about 20 minutes. The free plan is usually enough.
+   - On **your own server**, with **Docker or Podman** and no Cloudflare account: follow [DOCKER.md](DOCKER.md). This suits a school-wide vote on a school network.
 2. **Connect.** Open the site. Click **Make a multi-booth poll**. The first time, the site asks for the voting-centre address and the organiser code. The site saves them in your browser.
 3. **Make the poll.** Enter the question, the choices, how many choices a voter can rank, and a booth password. Choose how long a booth may stay open (the default is 2 hours).
 4. **Share.** Send the booth link to one *booth host* in each group, for example a teacher or a team leader. Send the booth password in a separate message.
@@ -90,6 +92,7 @@ Anyone who has the booth link and the password can cast ballots. The app does no
 
 - [How ranked-choice voting works](ranked-choice-voting.html): a short guide with an example, for voters and teachers.
 - [INSTALLING.md](INSTALLING.md): set up your own voting centre on Cloudflare, step by step.
+- [DOCKER.md](DOCKER.md): run your own voting centre with Docker or Podman, for example for a school-wide vote.
 - [DEVELOPING.md](DEVELOPING.md): how the code works, how to run the tests, and how to contribute.
 
 ## Licence

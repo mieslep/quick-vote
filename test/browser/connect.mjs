@@ -2,6 +2,8 @@
 // and open links on other devices. Unknown addresses must ask first and must send no request.
 import { API, CODE, createHarness, sleep } from './helpers.mjs';
 
+const HOST = new URL(API).host;
+const ENCODED = encodeURIComponent(API);
 const h = createHarness({ configApi: '' });
 const { openPage, q, t, submit, check, post, storageOf, fetched } = h;
 
@@ -33,13 +35,13 @@ check('code required', (await connectWith(w, API, '')).includes('needs an organi
 check('wrong code', (await connectWith(w, API, 'nope')).includes('organiser code is wrong'));
 check('settings are not saved after a failure', w.localStorage.getItem('qv:settings') === null);
 const connected = await connectWith(w, API, CODE);
-check('connected', connected.includes('Connected to localhost:8788'), connected);
+check('connected', connected.includes(`Connected to ${HOST}`), connected);
 check('settings saved', JSON.parse(w.localStorage.getItem('qv:settings')).apiBase === API);
 
 // 4. Make a poll. There is no code field. The links carry the address.
 w.location.hash = '#/new';
 await sleep(300);
-check('shows the voting centre', t(w, '.card').includes('Voting centre: localhost:8788'));
+check('shows the voting centre', t(w, '.card').includes(`Voting centre: ${HOST}`));
 check('no organiser code field', !q(w, '#create-code'));
 q(w, '#title').value = 'Class party menu';
 q(w, '#booth-password').value = 'boothpw';
@@ -50,8 +52,8 @@ const boothLink = q(w, '#booth-link').value;
 const adminLink = q(w, '#admin-link').value;
 check('created page shown', t(w, 'h1') === 'Your poll is ready');
 check('the page says this browser saved the admin link', t(w, '.card').includes('This browser has saved the admin link'));
-check('booth link carries the address', boothLink.includes('?api=http%3A%2F%2Flocalhost%3A8788'), boothLink);
-check('admin link carries the address', adminLink.includes('?api=http%3A%2F%2Flocalhost%3A8788'));
+check('booth link carries the address', boothLink.includes(`?api=${ENCODED}`), boothLink);
+check('admin link carries the address', adminLink.includes(`?api=${ENCODED}`));
 check('poll saved in this browser', JSON.parse(w.localStorage.getItem('qv:mypolls')).length === 1);
 
 // 5. The saved list shows the live state and lets the organiser return
@@ -80,7 +82,7 @@ const boothHash = boothLink.slice(boothLink.indexOf('#'));
 const before = fetched.length;
 const w2 = openPage(`http://localhost:8000/${boothHash}`);
 await sleep(500);
-check('an unknown address asks for trust', t(w2, 'h1') === 'Connect to this voting centre?' && t(w2, '.card').includes('localhost:8788'));
+check('an unknown address asks for trust', t(w2, 'h1') === 'Connect to this voting centre?' && t(w2, '.card').includes(HOST));
 check('no request before the person agrees', fetched.length === before, String(fetched.length - before));
 q(w2, '#trust').click();
 await sleep(800);

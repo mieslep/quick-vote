@@ -24,6 +24,8 @@ scripts/            set-site-url.mjs (change the site address), make-og-image.mj
 js/irv.js           the counting code (pure functions; also used by the tests)
 js/app.js           the pages: routing, forms, booth, admin, results, single-booth poll
 worker/src/index.js the Cloudflare Worker (the API)
+server/             a Node server that runs the same API code with SQLite (used by the Docker image)
+Dockerfile, compose.yaml  the container build (see DOCKER.md)
 worker/schema.sql   the D1 database schema
 worker/wrangler.toml the Worker configuration
 test/irv.test.mjs   unit tests for the count
@@ -55,7 +57,8 @@ Notes:
 ```sh
 npm test               # unit tests for the count and the search-engine tags (fast)
 npm run test:browser   # browser-flow tests: starts a local Worker and a temporary database
-npm run test:all       # both
+npm run test:browser:node  # the same tests against the Node server that the Docker image uses
+npm run test:all       # all of them
 ```
 
 **Unit tests** (`test/irv.test.mjs`) cover the instant-runoff count, ties, parts of a vote, show-of-hands estimates and the "every group is one vote" method.
@@ -129,6 +132,10 @@ All calls are JSON. A booth sends its password in the `x-booth-password` header.
 | `POST /api/polls/:id/mode` | admin key | Sets the count method and the show-of-hands method |
 | `POST /api/polls/:id/share` | admin key | Turns the public results on or off (after finalise) |
 | `GET /api/polls/:id/results` | anyone, if shared | Choices, ballots and manual counts of a final poll |
+
+### Two backends, one API
+
+The API code in `worker/src/index.js` runs in two places: on Cloudflare Workers with D1, and on Node with SQLite (`server/index.mjs`). `server/d1-sqlite.mjs` is a small stand-in for the D1 calls that the code uses (`prepare`, `bind`, `first`, `all`, `run`, `batch`). If you use another D1 feature in the Worker, add it to the stand-in too, and run both browser-test commands. Both backends must pass every suite.
 
 ### Data
 

@@ -18,10 +18,6 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="Quick Vote: ranked-choice voting for classes, clubs and events">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Quick Vote: free ranked-choice voting for classes and clubs">
-    <meta name="twitter:description" content="Run a ranked-choice (instant runoff) vote in minutes. No sign-up, works offline, and shows every round of the count.">
-    <meta name="twitter:image" content="https://mieslep.github.io/quick-vote/assets/og-image.png">
 
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -97,7 +93,8 @@
 
       <h2>One device, or many</h2>
       <p><strong>A single-booth poll</strong> runs on one device, such as a classroom tablet or a laptop. Nothing leaves the device, and it works with no network after the page loads. The person who makes the poll sets a password to close voting and show the result.</p>
-      <p><strong>A multi-booth poll</strong> lets many groups vote at the same time, each on its own device. A voting centre that you set up (a free Cloudflare account is usually enough) adds up all the votes. A group with a weak signal can vote offline. The booth sends its votes when the signal returns. A group that cannot use a device can count hands, and a host enters the totals.</p>
+      <p><strong>A multi-booth poll</strong> lets many groups vote at the same time, each on its own device. A voting centre that you set up (on Cloudflare, or on your own server) adds up all the votes. A group with a weak signal can vote offline. The booth sends its votes when the signal returns. A group that cannot use a device can count hands, and a host enters the totals.</p>
+      <p>You can run the voting centre on a school server or any computer with <a href="https://github.com/mieslep/quick-vote/blob/main/DOCKER.md">Docker or Podman</a>, with no Cloudflare account.</p>
 
       <h2>Privacy</h2>
       <p>A ballot holds only the ranking, the group name and a random booth ID. It holds no voter name and no time of day. Quick Vote has no accounts and no tracking. A single-booth poll never sends anything to a server.</p>
@@ -132,7 +129,8 @@
     <footer class="site-footer">
       <a href="ranked-choice-voting.html">How ranked-choice voting works</a> ·
       <a href="https://github.com/mieslep/quick-vote">Source code on GitHub</a> ·
-      <a href="https://github.com/mieslep/quick-vote/blob/main/INSTALLING.md">Set up a voting centre</a>
+      <a href="https://github.com/mieslep/quick-vote/blob/main/INSTALLING.md">Set up on Cloudflare</a> ·
+      <a href="https://github.com/mieslep/quick-vote/blob/main/DOCKER.md">Run with Docker or Podman</a>
     </footer>
 
     <script src="config.js"></script>

@@ -4,6 +4,8 @@ This guide sets up your own Quick Vote *voting centre* on Cloudflare, and publis
 
 It takes about 20 minutes. You do it once.
 
+**No Cloudflare account, or you prefer to host it yourself?** Run Quick Vote with Docker or Podman instead: see [DOCKER.md](DOCKER.md).
+
 ## What you will set up
 
 | Part | What it does | Where it runs |
@@ -156,6 +158,14 @@ You should see `{"ok":true,"createCodeRequired":true}`.
 
 If this address is different from the `ALLOWED_ORIGIN` that you set, fix `ALLOWED_ORIGIN` and run `npx wrangler deploy` again. Use the origin only, for example `https://<your-name>.github.io`.
 
+The page tags (the canonical address, `sitemap.xml` and `robots.txt`) hold the address of the original site. Point them at your own copy, and commit the result:
+
+```sh
+node scripts/set-site-url.mjs https://<your-name>.github.io/<repository-name> https://github.com/<your-name>/<repository-name>
+```
+
+The second address (your repository) is optional.
+
 ### Another host
 
 Any static host works. Upload these files from the repository root: `index.html`, `ranked-choice-voting.html`, `styles.css`, `config.js`, `sw.js`, `favicon.svg`, `robots.txt`, `sitemap.xml`, the `js/` folder and the `assets/` folder. The host must use `https://`, so that the offline cache works.
@@ -180,24 +190,6 @@ window.QUICK_VOTE_API = 'https://quick-vote.<your-name>.workers.dev';
 ```
 
 Visitors still need the organiser code to make a poll. Booth hosts need nothing: the booth link carries the address.
-
-## 9. Search engines (optional)
-
-If you want people to find your site on Google or Bing:
-
-1. **Set your site address.** The page tags, `sitemap.xml` and `robots.txt` hold the address of the original site. Change them with one command, and commit the result:
-
-   ```sh
-   node scripts/set-site-url.mjs https://<your-name>.github.io/<repository-name> https://github.com/<your-name>/<repository-name>
-   ```
-
-   The second address (your repository) is optional.
-2. **Check the text.** Search engines read `index.html` and `ranked-choice-voting.html`. They do not read the `#/...` pages of the app, so only these two pages appear in search results. Edit the title, the description and the text to suit your audience.
-3. **Verify the site.** In [Google Search Console](https://search.google.com/search-console) and [Bing Webmaster Tools](https://www.bing.com/webmasters), add your site. Choose the HTML tag method. Each service gives you a `<meta>` tag. Put it in the `<head>` of `index.html`, commit and push, then press "Verify".
-4. **Submit the sitemap.** In each service, submit `https://<your-name>.github.io/<repository-name>/sitemap.xml`.
-5. **Check the result.** Test one page with the URL Inspection tool in Search Console. A new site can take days or weeks to appear.
-
-The social preview image is `assets/og-image.png`. To change it, edit `assets/og-image.svg` and run `node scripts/make-og-image.mjs`.
 
 ## Updating
 

@@ -1,5 +1,7 @@
-// Starts a local Worker with a temporary database, runs every browser-flow suite, and stops the Worker.
-// It needs Linux, macOS or WSL. Run it with: npm run test:browser
+// Starts a local backend with a temporary database, runs every browser-flow suite, and stops the backend.
+//   npm run test:browser         the Cloudflare Worker, run by wrangler dev
+//   npm run test:browser:node    the Node server that the Docker image uses (server/index.mjs)
+// It needs Linux, macOS or WSL.
 import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -8,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '../..');
+const backend = process.argv.includes('--node') ? 'node' : 'wrangler';
 const port = process.env.QUICK_VOTE_TEST_PORT || '8788';
 const code = process.env.QUICK_VOTE_TEST_CODE || 'abc123';
 const wrangler = path.join(root, 'node_modules', '.bin', 'wrangler');
@@ -21,16 +24,25 @@ function killTree(pid) {
   try { process.kill(pid, 'SIGKILL'); } catch { /* The process has already ended. */ }
 }
 
-const setup = spawnSync(wrangler, ['d1', 'execute', 'quick-vote', '--local', '--persist-to', data, '--file=schema.sql'], { cwd: path.join(root, 'worker'), encoding: 'utf8' });
-if (setup.status !== 0) {
-  console.error(setup.stdout, setup.stderr);
-  process.exit(1);
+let worker;
+if (backend === 'node') {
+  worker = spawn(process.execPath, ['--disable-warning=ExperimentalWarning', path.join(root, 'server', 'index.mjs')], {
+    cwd: root,
+    stdio: 'ignore',
+    env: { ...process.env, PORT: port, DATA_DIR: data, CREATE_CODE: code },
+  });
+} else {
+  const setup = spawnSync(wrangler, ['d1', 'execute', 'quick-vote', '--local', '--persist-to', data, '--file=schema.sql'], { cwd: path.join(root, 'worker'), encoding: 'utf8' });
+  if (setup.status !== 0) {
+    console.error(setup.stdout, setup.stderr);
+    process.exit(1);
+  }
+  worker = spawn(wrangler, ['dev', '--local', '--port', port, '--inspector-port', String(Number(port) + 551), '--persist-to', data, '--var', `CREATE_CODE:${code}`], {
+    cwd: path.join(root, 'worker'),
+    stdio: 'ignore',
+  });
 }
-
-const worker = spawn(wrangler, ['dev', '--local', '--port', port, '--inspector-port', String(Number(port) + 551), '--persist-to', data, '--var', `CREATE_CODE:${code}`], {
-  cwd: path.join(root, 'worker'),
-  stdio: 'ignore',
-});
+console.log(`Backend: ${backend}`);
 
 let failed = false;
 try {
@@ -39,7 +51,7 @@ try {
     up = await fetch(`http://localhost:${port}/api/ping`).then((r) => r.ok).catch(() => false);
     if (!up) await new Promise((resolve) => setTimeout(resolve, 1000));
   }
-  if (!up) throw new Error('The local Worker did not start.');
+  if (!up) throw new Error('The local backend did not start.');
   for (const suite of suites) {
     console.log(`\n=== ${suite}`);
     const result = spawnSync(process.execPath, [path.join(here, suite)], { stdio: 'inherit', env });

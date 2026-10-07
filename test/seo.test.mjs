@@ -29,7 +29,7 @@ for (const page of pages) {
     assert.equal(meta(doc, 'meta[property="og:url"]'), canonical);
     assert.equal(meta(doc, 'meta[property="og:title"]'), doc.title);
     assert.ok(meta(doc, 'meta[property="og:description"]').length > 40);
-    assert.equal(meta(doc, 'meta[name="twitter:card"]'), 'summary_large_image');
+    assert.equal(doc.querySelector('meta[name^="twitter:"]'), null, 'no Twitter tags');
     const image = meta(doc, 'meta[property="og:image"]');
     assert.match(image, /^https:\/\//);
     assert.ok(fs.existsSync(path.join(root, new URL(image).pathname.split('/').slice(2).join('/'))), `missing ${image}`);
