@@ -266,10 +266,18 @@ function home() {
       <div class="row"><a class="button secondary" href="#/new">Make a multi-booth poll</a></div>
       ${myPolls.length ? `
         <h3>Your multi-booth polls</h3>
-        <ul class="groups">
-          ${myPolls.map((m) => `<li><a href="#/admin/${esc(m.id)}/${esc(m.adminKey)}">${esc(m.title)}</a> <span class="muted">· ${esc(hostOf(m.api || ''))}</span></li>`).join('')}
+        <ul class="mypolls">
+          ${myPolls.map((m) => `
+            <li>
+              <a href="#/admin/${esc(m.id)}/${esc(m.adminKey)}"><b>${esc(m.title)}</b></a>
+              <span class="muted">· ${esc(hostOf(m.api || ''))} · <span data-status="${esc(m.id)}">checking…</span></span>
+              <span class="row-actions">
+                <button class="button secondary small" type="button" data-copy-booth="${esc(m.id)}">Copy booth link</button>
+                <button class="button secondary small" type="button" data-forget="${esc(m.id)}">Remove</button>
+              </span>
+            </li>`).join('')}
         </ul>
-        <p class="muted">These admin links are saved in this browser. Anyone who uses this browser can open them.</p>` : ''}
+        <p class="muted">This browser saved the admin links. Anyone who uses this browser can open them. Removing a poll here does not delete it from the voting centre.</p>` : ''}
     </section>
     ${mine.length ? `
     <section class="card narrow">
@@ -296,6 +304,34 @@ function home() {
     const m = ref.match(/^([a-z0-9]+)$/);
     if (m) location.hash = `#/p/${m[1]}`;
   });
+
+  // Ask each voting centre for the state of the saved polls.
+  const labels = { open: 'voting open', closed: 'voting closed, results provisional', final: 'final' };
+  myPolls.forEach(async (m) => {
+    const el = document.querySelector(`[data-status="${m.id}"]`);
+    try {
+      const info = await api(`/api/polls/${m.id}`, { base: m.api });
+      if (el) el.textContent = labels[info.status] || info.status;
+    } catch (err) {
+      if (el) el.textContent = err.status === 404 ? 'not found on the voting centre' : 'status not available';
+    }
+  });
+  document.querySelectorAll('[data-copy-booth]').forEach((btn) => btn.addEventListener('click', async () => {
+    const m = myPolls.find((x) => x.id === btn.dataset.copyBooth);
+    const link = appUrl(`/p/${m.id}${apiParam(m.api)}`);
+    try {
+      await navigator.clipboard.writeText(link);
+      btn.textContent = 'Copied';
+    } catch {
+      window.prompt('Copy the booth link:', link);
+    }
+  }));
+  document.querySelectorAll('[data-forget]').forEach((btn) => btn.addEventListener('click', () => {
+    const m = myPolls.find((x) => x.id === btn.dataset.forget);
+    if (!confirm(`Remove "${m.title}" from this list? The poll stays on the voting centre. You need its admin link to open it again.`)) return;
+    store('qv:mypolls', myPolls.filter((x) => x.id !== m.id));
+    home();
+  }));
 }
 
 // ---------- make a poll ----------
@@ -315,7 +351,7 @@ function newPoll(local = false) {
       ${local ? '<p class="muted">This poll lives on this device only. Nothing is sent to a server.</p>' : `<p class="muted">Voting centre: <b>${esc(hostOf(apiBase))}</b> · <a href="#/connect">Change</a></p>`}
       <form id="poll-form">
         <label for="title">Question</label>
-        <input type="text" id="title" maxlength="120" required placeholder="What must the Master Chef dish be?">
+        <input type="text" id="title" maxlength="120" required placeholder="Which game should we play?">
         <label for="description">Notes for voters (optional)</label>
         <textarea id="description" maxlength="500"></textarea>
         <label for="max-ranks">How many choices can each voter rank?</label>
@@ -329,7 +365,7 @@ function newPoll(local = false) {
         <p class="muted">Each booth closes itself this long after its start time. Leave empty for no limit.</p>
         <label for="booth-password">Booth password</label>
         <input type="text" id="booth-password" minlength="4" maxlength="100" required autocomplete="off">
-        <p class="muted">Give this password to each leader who runs a booth.</p>`}
+        <p class="muted">Give this password to each booth host. A booth host runs a booth on one device.</p>`}
         <h2>Choices</h2>
         <p class="muted">Add 2 to 12 choices. A picture is optional.</p>
         <div id="choices"></div>
@@ -431,11 +467,11 @@ function showCreated({ id, adminKey, boothPassword, title }) {
       <h1>Your poll is ready</h1>
       <p><b>${esc(title)}</b></p>
       <h2>Booth link</h2>
-      <p>Share this link with each leader. Share the booth password in a separate message.</p>
+      <p>Share this link with each booth host. Share the booth password in a separate message.</p>
       ${linkBox('booth-link', appUrl(`/p/${id}${apiParam(apiBase)}`))}
       <p>Booth password: <b>${esc(boothPassword)}</b></p>
       <h2>Your admin link</h2>
-      <p class="error">Save this link now. It is the only way to see the results. It is not shown again.</p>
+      <p>This browser has saved the admin link. The home page lists this poll, so you can return to it. The voting centre stores only a scrambled form of the key, so it cannot show the link again. Copy the link as a backup. You need it to open the admin page on another device, or after you clear this browser's data.</p>
       ${linkBox('admin-link', appUrl(`/admin/${id}/${adminKey}${apiParam(apiBase)}`))}
       <div class="row"><a class="button" href="#/admin/${esc(id)}/${esc(adminKey)}">Go to the admin page</a></div>
     </section>`);
@@ -493,11 +529,11 @@ async function booth(id) {
       <p>Set up a polling booth on this device.</p>
       <form id="booth-form">
         <label for="booth-name">Your group name</label>
-        <input type="text" id="booth-name" maxlength="40" required placeholder="1st Ennis Cubs">
+        <input type="text" id="booth-name" maxlength="40" required placeholder="Class 4B">
         <label for="booth-pass">Booth password</label>
         <input type="password" id="booth-pass" required autocomplete="off">
         <label>How will your group vote?</label>
-        <label class="inline"><input type="radio" name="mode" value="ranked" checked> 🗳️ Each cub casts a ranked vote on this device</label>
+        <label class="inline"><input type="radio" name="mode" value="ranked" checked> 🗳️ Each voter casts a ranked vote on this device</label>
         <label class="inline"><input type="radio" name="mode" value="hands"> ✋ We count hands. I enter the totals for each choice</label>
         <label>When does voting start?</label>
         <label class="inline"><input type="radio" name="start" value="now" checked> Now</label>
@@ -757,7 +793,7 @@ function runBooth(id, session) {
       if (!session.hands) return '<p class="muted">No totals were entered at this booth.</p>';
       const counts = session.hands.counts;
       return `
-        <p class="muted">${plural(session.hands.total, 'cub')} counted by show of hands. This result is for this booth only. It can differ from the overall result.</p>
+        <p class="muted">${plural(session.hands.total, 'voter')} counted by show of hands. This result is for this booth only. It can differ from the overall result.</p>
         ${handsBarsHtml(poll.choices, counts)}`;
     }
     const local = store(localKey(id)) || [];
@@ -777,12 +813,12 @@ function runBooth(id, session) {
         <div class="status-line">${emoji} ${esc(session.label)} · <span class="net" id="status"></span></div>
       </div>
       <p class="notice" id="window" hidden></p>
-      <p class="instruction"><b>Count the hands.</b> Ask who wants each choice. Enter how many cubs voted for each one. Each cub votes once.</p>
+      <p class="instruction"><b>Count the hands.</b> Ask who wants each choice. Enter how many voters chose each one. Each voter votes once.</p>
       ${poll.description ? `<p class="muted instruction">${esc(poll.description)}</p>` : ''}
       <div class="hand-list">
         ${poll.choices.map((c) => handRowHtml(c, counts[c.id])).join('')}
       </div>
-      <p class="hand-total">Total: <b id="hand-total">0</b> cubs counted</p>
+      <p class="hand-total">Total: <b id="hand-total">0</b> voters counted</p>
       <div class="ballot-actions">
         ${session.hands ? '<button class="button secondary big" type="button" id="cancel-hands">Cancel</button>' : ''}
         <button class="button big" type="button" id="send-hands" disabled>Send our totals</button>
@@ -801,7 +837,7 @@ function runBooth(id, session) {
       const counts = read();
       const total = sumCounts(counts);
       if (total === 0) return;
-      if (!confirm(`Send these totals? ${plural(total, 'cub')} counted. You can change the totals until voting closes.`)) return;
+      if (!confirm(`Send these totals? ${plural(total, 'voter')} counted. You can change the totals until voting closes.`)) return;
       session.hands = { counts, total, castAt: Math.round(serverNow()), accepted: false, rejected: false };
       store(boothKey(id), session);
       saveStats({ cast: total, discarded: 0 });
@@ -1107,7 +1143,7 @@ async function admin(id, key) {
   cleanup = () => clearInterval(timer);
 
   async function load() {
-    // Do not redraw while the leader types in the group count form.
+    // Do not redraw while the organiser types in the group count form.
     if (dirty) return;
     let poll;
     try {

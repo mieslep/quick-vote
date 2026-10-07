@@ -144,3 +144,7 @@ legend { font-weight: 800; padding: 0 6px; }
 .step:disabled { opacity: .4; cursor: not-allowed; }
 .hand-total { font-size: 1.15rem; margin: 12px 0 0; text-align: right; }
 .groups { padding-left: 20px; line-height: 1.7; }
+
+.mypolls { list-style: none; padding: 0; margin: 0; }
+.mypolls li { padding: 10px 0; border-bottom: 1px solid var(--line); }
+.mypolls .row-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
