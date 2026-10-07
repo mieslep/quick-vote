@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mieslep.github.io/quick-vote/sitemap.xml

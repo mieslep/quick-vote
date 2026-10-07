@@ -3,9 +3,58 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quick Vote: free ranked-choice voting for classes and clubs</title>
+    <meta name="description" content="Run a ranked-choice (instant runoff) vote in minutes. No sign-up, works offline, and shows every round. Made for classrooms, clubs, teams and events.">
+    <link rel="canonical" href="https://mieslep.github.io/quick-vote/">
+    <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="theme-color" content="#344e37">
-    <title>Quick Vote</title>
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Quick Vote">
+    <meta property="og:title" content="Quick Vote: free ranked-choice voting for classes and clubs">
+    <meta property="og:description" content="Run a ranked-choice (instant runoff) vote in minutes. No sign-up, works offline, and shows every round of the count.">
+    <meta property="og:url" content="https://mieslep.github.io/quick-vote/">
+    <meta property="og:image" content="https://mieslep.github.io/quick-vote/assets/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Quick Vote: ranked-choice voting for classes, clubs and events">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Quick Vote: free ranked-choice voting for classes and clubs">
+    <meta name="twitter:description" content="Run a ranked-choice (instant runoff) vote in minutes. No sign-up, works offline, and shows every round of the count.">
+    <meta name="twitter:image" content="https://mieslep.github.io/quick-vote/assets/og-image.png">
+
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap">
     <link rel="stylesheet" href="styles.css">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Quick Vote",
+      "url": "https://mieslep.github.io/quick-vote/",
+      "description": "A free web app for ranked-choice (instant runoff) voting. Run a vote on one device or on many devices. It works offline and shows every round of the count.",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any device with a web browser",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "audience": { "@type": "Audience", "audienceType": "Teachers, club leaders, team organisers and event organisers" },
+      "featureList": [
+        "Ranked-choice (instant runoff) counting with round-by-round results",
+        "Single-booth polls that run on one device with no network",
+        "Multi-booth polls that add up the votes from many devices",
+        "Offline voting that sends votes when the signal returns",
+        "Show-of-hands totals for groups with no device",
+        "Optional pictures for each choice",
+        "No accounts and no tracking"
+      ],
+      "codeRepository": "https://github.com/mieslep/quick-vote",
+      "license": "https://opensource.org/licenses/MIT"
+    }
+    </script>
   </head>
   <body>
     <header class="site-header">
@@ -13,11 +62,79 @@
         <span class="brand-mark" aria-hidden="true">🗳️</span>
         <span>Quick Vote</span>
       </a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="ranked-choice-voting.html">How ranked-choice voting works</a>
+        <a href="https://github.com/mieslep/quick-vote">GitHub</a>
+      </nav>
     </header>
+
     <main id="app" aria-live="polite">
-      <p class="notice">Loading. If this message stays, the script did not start. Press F12 and read the Console tab. Open the site with an address that starts with http://, not file://.</p>
+      <!-- This text is for search engines and for a browser with no JavaScript. The script replaces it. -->
+      <section class="card narrow">
+        <h1>Free ranked-choice voting for classes, clubs and events</h1>
+        <p>Quick Vote runs a ranked-choice vote (also called instant runoff) in minutes. Voters rank the choices: first, second, third. The app counts the votes and shows every round. There is no sign-up, and it works with no network after the page loads.</p>
+        <p><a class="button big" href="#/local/new">Make a single-booth poll</a></p>
+        <p><a class="button secondary" href="#/new">Make a multi-booth poll</a></p>
+        <noscript><p class="notice">Quick Vote needs JavaScript. Turn it on in your browser to make a poll.</p></noscript>
+        <p class="notice">Loading. If this message stays, the script did not start. Press F12 and read the Console tab. Open the site with an address that starts with https:// or http://localhost, not file://.</p>
+      </section>
     </main>
-    <noscript><p class="notice">Quick Vote needs JavaScript.</p></noscript>
+
+    <section class="about" id="about" aria-labelledby="about-title">
+      <h2 id="about-title">What is Quick Vote?</h2>
+      <p>Quick Vote is a free web app that lets a group choose between options fairly. Each voter ranks the options in order. The app then counts the votes with instant-runoff voting, and shows each round of the count, so everyone can see how the winner came about.</p>
+      <p>Teachers use it for class votes: a project topic, a field trip or a party menu. Clubs, teams and youth groups use it to choose a name, a date or a prize. There is nothing to install and no account to make. The tap-to-rank screen is simple enough for young voters, and the booth host stays in control.</p>
+
+      <h2>How ranked-choice (instant runoff) voting works</h2>
+      <ol>
+        <li>Each voter ranks the choices: 1 for the favourite, then 2, then 3.</li>
+        <li>The app counts every voter's first choice.</li>
+        <li>If one choice has more than half of the votes, it wins.</li>
+        <li>If not, the choice with the fewest votes is out. Its voters' votes move to their next choice.</li>
+        <li>The app repeats until one choice has more than half.</li>
+      </ol>
+      <p>Because a vote moves to the next choice, similar options do not split the vote, and a voter never has to guess a "safe" choice. Read the <a href="ranked-choice-voting.html">full guide with a worked example</a>.</p>
+
+      <h2>One device, or many</h2>
+      <p><strong>A single-booth poll</strong> runs on one device, such as a classroom tablet or a laptop. Nothing leaves the device, and it works with no network after the page loads. The person who makes the poll sets a password to close voting and show the result.</p>
+      <p><strong>A multi-booth poll</strong> lets many groups vote at the same time, each on its own device. A voting centre that you set up (a free Cloudflare account is usually enough) adds up all the votes. A group with a weak signal can vote offline. The booth sends its votes when the signal returns. A group that cannot use a device can count hands, and a host enters the totals.</p>
+
+      <h2>Privacy</h2>
+      <p>A ballot holds only the ranking, the group name and a random booth ID. It holds no voter name and no time of day. Quick Vote has no accounts and no tracking. A single-booth poll never sends anything to a server.</p>
+
+      <h2>Questions</h2>
+      <details>
+        <summary>Do voters need an account?</summary>
+        <p>No. A voter taps the choices in order and presses "Cast my vote". The booth host runs the device.</p>
+      </details>
+      <details>
+        <summary>Does it work with no internet?</summary>
+        <p>A single-booth poll works with no network once the page has loaded. A multi-booth booth needs a signal when the host first opens it. After that, it saves votes on the device and sends them when the signal returns.</p>
+      </details>
+      <details>
+        <summary>Is it free?</summary>
+        <p>Yes. Quick Vote is open source. A multi-booth poll needs a voting centre that you run on Cloudflare. The free plan is usually enough for classes and clubs.</p>
+      </details>
+      <details>
+        <summary>Can I add pictures?</summary>
+        <p>Yes. A choice can have a photo, or only a name. A choice with no photo shows only its name.</p>
+      </details>
+      <details>
+        <summary>What if two choices tie?</summary>
+        <p>If two choices tie for the fewest votes, the count looks at the earlier rounds to decide which one is out. If every earlier round is equal, the choice that is last in the list is out. If all the remaining choices tie, the result is a tie. The round-by-round view shows each step.</p>
+      </details>
+      <details>
+        <summary>Where is the code?</summary>
+        <p>The code is on <a href="https://github.com/mieslep/quick-vote">GitHub</a>. The repository has a guide to set up your own voting centre, and a guide for people who want to contribute.</p>
+      </details>
+    </section>
+
+    <footer class="site-footer">
+      <a href="ranked-choice-voting.html">How ranked-choice voting works</a> ·
+      <a href="https://github.com/mieslep/quick-vote">Source code on GitHub</a> ·
+      <a href="https://github.com/mieslep/quick-vote/blob/main/INSTALLING.md">Set up a voting centre</a>
+    </footer>
+
     <script src="config.js"></script>
     <script type="module" src="js/app.js"></script>
   </body>

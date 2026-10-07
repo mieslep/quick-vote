@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>How ranked-choice voting works: a simple guide with an example</title>
+    <meta name="description" content="Learn how ranked-choice (instant runoff) voting works, with a worked example, and a five-minute way to run a fair vote in a class or club.">
+    <link rel="canonical" href="https://mieslep.github.io/quick-vote/ranked-choice-voting.html">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="theme-color" content="#344e37">
+
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Quick Vote">
+    <meta property="og:title" content="How ranked-choice voting works: a simple guide with an example">
+    <meta property="og:description" content="Learn how ranked-choice (instant runoff) voting works, with a worked example, and a five-minute way to run a fair vote in a class or club.">
+    <meta property="og:url" content="https://mieslep.github.io/quick-vote/ranked-choice-voting.html">
+    <meta property="og:image" content="https://mieslep.github.io/quick-vote/assets/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Quick Vote: ranked-choice voting for classes, clubs and events">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="Quick Vote home">
+        <span class="brand-mark" aria-hidden="true">🗳️</span>
+        <span>Quick Vote</span>
+      </a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="./">Make a poll</a>
+        <a href="https://github.com/mieslep/quick-vote">GitHub</a>
+      </nav>
+    </header>
+
+    <main class="page">
+      <h1>How ranked-choice voting works</h1>
+      <p>In a ranked-choice vote, each voter puts the choices in order: first, second, third. The count then finds a winner that most voters can accept. Another name for the most common form is <strong>instant-runoff voting</strong>. This guide explains it in plain steps, with an example.</p>
+
+      <h2>The problem with picking one choice</h2>
+      <p>In a normal vote, each person picks one option, and the option with the most votes wins. This can go wrong when similar options split the vote. Twelve people vote for a class party menu. Five pick pizza, four pick pasta and three pick tacos. Pizza wins with 5 of 12 votes. Yet seven people did not pick pizza. If the three taco voters had been asked for a second choice, the result might change.</p>
+      <p>A voter also has to guess. A person who likes tacos best may vote for pasta instead, to avoid "wasting" a vote. A ranked ballot removes this problem. The voter can be honest, because a vote moves on when the first choice cannot win.</p>
+
+      <h2>How instant runoff works, step by step</h2>
+      <ol>
+        <li><strong>Rank.</strong> Each voter ranks the choices. 1 is the favourite, 2 is the next, and so on. A voter may rank only some of the choices.</li>
+        <li><strong>Count first choices.</strong> Every ballot counts for its first choice.</li>
+        <li><strong>Look for a majority.</strong> If one choice has more than half of the counted votes, it wins. The count ends.</li>
+        <li><strong>Remove the last choice.</strong> If nobody has a majority, the choice with the fewest votes is out.</li>
+        <li><strong>Move the votes.</strong> Each ballot that had the removed choice first now counts for its next choice that is still in the count.</li>
+        <li><strong>Repeat.</strong> Go back to step 3 until one choice has more than half.</li>
+      </ol>
+
+      <h2>A worked example</h2>
+      <p>Twelve voters rank three options. Five voters rank Pizza first. Four rank Pasta first. Three rank Tacos first, and all three rank Pasta second.</p>
+      <table>
+        <thead>
+          <tr><th>Round</th><th>Pizza</th><th>Pasta</th><th>Tacos</th><th>What happens</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>5</td><td>4</td><td>3</td><td>Nobody has more than 6. Tacos has the fewest, so Tacos is out.</td></tr>
+          <tr><td>2</td><td>5</td><td>7</td><td>out</td><td>The three taco votes move to Pasta. Pasta has 7 of 12 and wins.</td></tr>
+        </tbody>
+      </table>
+      <p>Pizza had the most first-choice votes, but Pasta wins. Seven of the twelve voters prefer Pasta to Pizza, so Pasta is the choice that most of the group can accept.</p>
+
+      <h2>Run a class vote in five minutes</h2>
+      <p><a href="./">Quick Vote</a> runs the count for you, and shows each round, so that you can put it on the board.</p>
+      <ol>
+        <li>Open <a href="./">Quick Vote</a> and click <strong>Make a single-booth poll</strong>.</li>
+        <li>Type the question. Add two to twelve choices. A picture for each choice helps younger children.</li>
+        <li>Choose a password to close voting. Keep it from the class.</li>
+        <li>Pass the device around. Each child taps the choices in order, then presses <strong>Cast my vote</strong>.</li>
+        <li>When everyone has voted, press <strong>Close voting and show the result</strong> and type the password.</li>
+        <li>Walk through the rounds with the class.</li>
+      </ol>
+      <p class="cta"><a class="button big" href="./">Make a poll</a></p>
+      <p>Several classes, rooms or sites can vote on the same question, each on its own device. Quick Vote adds up all the booths. See the <a href="https://github.com/mieslep/quick-vote/blob/main/INSTALLING.md">setup guide</a> for a multi-booth poll.</p>
+
+      <h2>Tips for teachers and organisers</h2>
+      <ul>
+        <li>Run a show of hands first. Then run the ranked vote and compare the two results. The difference makes a good talking point.</li>
+        <li>Ask voters to rank at least three choices, if there are that many. A ballot with one choice stops counting when that choice is out.</li>
+        <li>Use pictures for young children. A choice with no picture shows only its name.</li>
+        <li>Keep the password to close voting private, so that the result shows only when you are ready.</li>
+      </ul>
+
+      <h2>Questions</h2>
+      <details>
+        <summary>What if a voter ranks only one choice?</summary>
+        <p>That ballot counts for the choice while it is in the count. When the choice is out, the ballot has no next choice, so it stops counting. This is normal. It is why ranking more choices gives a voter more say.</p>
+      </details>
+      <details>
+        <summary>What if two choices tie?</summary>
+        <p>If two choices tie for the fewest votes, Quick Vote looks at the earlier rounds to decide which one is out. If every earlier round is equal, the choice that is last in the list is out. If all the remaining choices tie, the result is a tie.</p>
+      </details>
+      <details>
+        <summary>Is ranked-choice voting used in real elections?</summary>
+        <p>Yes. For example, Ireland elects its president this way. Australia's House of Representatives uses a form of it, and some places in the United States use it too.</p>
+      </details>
+      <details>
+        <summary>Does the first-choice winner always win?</summary>
+        <p>No. A choice with a majority of first-choice votes always wins. Without a majority, the later rounds can change the result, as in the example above.</p>
+      </details>
+    </main>
+
+    <footer class="site-footer">
+      <a href="./">Quick Vote</a> ·
+      <a href="https://github.com/mieslep/quick-vote">Source code on GitHub</a> ·
+      <a href="https://github.com/mieslep/quick-vote/blob/main/INSTALLING.md">Set up a voting centre</a>
+    </footer>
+  </body>
+</html>

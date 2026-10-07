@@ -158,7 +158,7 @@ If this address is different from the `ALLOWED_ORIGIN` that you set, fix `ALLOWE
 
 ### Another host
 
-Any static host works. Upload the files in the repository root: `index.html`, `styles.css`, `config.js`, `sw.js` and the `js/` folder. The host must use `https://`, so that the offline cache works.
+Any static host works. Upload these files from the repository root: `index.html`, `ranked-choice-voting.html`, `styles.css`, `config.js`, `sw.js`, `favicon.svg`, `robots.txt`, `sitemap.xml`, the `js/` folder and the `assets/` folder. The host must use `https://`, so that the offline cache works.
 
 ## 8. Connect and test
 
@@ -171,13 +171,33 @@ The site saves the Worker address and the code in your browser. The booth, admin
 
 ### Optional: a default address
 
-`config.js` holds a default Worker address:
+`config.js` is empty by default. Each visitor then connects to a voting centre on the Connect page, and the site remembers the address in that browser. You do not need to edit `config.js`.
+
+To give visitors one voting centre with no setup, put its address in `config.js`:
 
 ```js
 window.QUICK_VOTE_API = 'https://quick-vote.<your-name>.workers.dev';
 ```
 
-With a default, visitors need not connect before they open a booth. They still need the organiser code to make a poll. Leave it empty on a public copy that other people may use with their own Workers.
+Visitors still need the organiser code to make a poll. Booth hosts need nothing: the booth link carries the address.
+
+## 9. Search engines (optional)
+
+If you want people to find your site on Google or Bing:
+
+1. **Set your site address.** The page tags, `sitemap.xml` and `robots.txt` hold the address of the original site. Change them with one command, and commit the result:
+
+   ```sh
+   node scripts/set-site-url.mjs https://<your-name>.github.io/<repository-name> https://github.com/<your-name>/<repository-name>
+   ```
+
+   The second address (your repository) is optional.
+2. **Check the text.** Search engines read `index.html` and `ranked-choice-voting.html`. They do not read the `#/...` pages of the app, so only these two pages appear in search results. Edit the title, the description and the text to suit your audience.
+3. **Verify the site.** In [Google Search Console](https://search.google.com/search-console) and [Bing Webmaster Tools](https://www.bing.com/webmasters), add your site. Choose the HTML tag method. Each service gives you a `<meta>` tag. Put it in the `<head>` of `index.html`, commit and push, then press "Verify".
+4. **Submit the sitemap.** In each service, submit `https://<your-name>.github.io/<repository-name>/sitemap.xml`.
+5. **Check the result.** Test one page with the URL Inspection tool in Search Console. A new site can take days or weeks to appear.
+
+The social preview image is `assets/og-image.png`. To change it, edit `assets/og-image.svg` and run `node scripts/make-og-image.mjs`.
 
 ## Updating
 

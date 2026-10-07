@@ -16,7 +16,7 @@ check('home has the multi-booth button', qa(w, 'a.button').some((a) => a.textCon
 w.location.hash = '#/local/new';
 await sleep(300);
 check('form has no booth minutes or organiser code', !q(w, '#booth-minutes') && !q(w, '#create-code'));
-check('form has no voting-method choice', !q(w, 'input[name=method]') && !w.document.body.textContent.includes('count hands'));
+check('form has no voting-method choice', !q(w, 'input[name=method]') && !t(w, '#app').includes('count hands'));
 check('password is required and labelled', q(w, '#booth-password').required === true && t(w, 'label[for=booth-password]') === 'Password to close voting', t(w, 'label[for=booth-password]'));
 q(w, '#title').value = 'Which game should we play?';
 q(w, '#max-ranks').value = '3';

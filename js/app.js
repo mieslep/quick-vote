@@ -161,6 +161,8 @@ function route() {
   const [pathPart, query = ''] = location.hash.replace(/^#\/?/, '').split('?');
   const params = new URLSearchParams(query);
   const [view, id, key] = pathPart.split('/').filter(Boolean);
+  // The about text on the page shows on the home view only.
+  document.body.dataset.view = view || 'home';
   apiBase = settings().apiBase || CONFIG_API;
   try {
     let page;

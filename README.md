@@ -75,7 +75,7 @@ The home page lists the polls that you made in this browser, with their state (o
 - The server does not keep the cast time of a ballot. It uses the time once, to decide whether the ballot came before the poll closed.
 - The admin page cannot see any ballot until voting closes.
 - The admin key and the booth password are stored on the server only as hashes.
-- The app has no tracking and no accounts. The site loads two fonts from Google Fonts. You can remove them in `styles.css`.
+- The app has no tracking and no accounts. The pages load two fonts from Google Fonts. You can remove the font links in the HTML pages.
 
 Anyone who has the booth link and the password can cast ballots. The app does not stop one person from voting twice. The booth host watches the booth, as at a real polling station.
 
@@ -88,5 +88,10 @@ Anyone who has the booth link and the password can cast ballots. The app does no
 
 ## More
 
+- [How ranked-choice voting works](ranked-choice-voting.html): a short guide with an example, for voters and teachers.
 - [INSTALLING.md](INSTALLING.md): set up your own voting centre on Cloudflare, step by step.
 - [DEVELOPING.md](DEVELOPING.md): how the code works, how to run the tests, and how to contribute.
+
+## Licence
+
+Quick Vote is open source under the [MIT licence](LICENSE).

@@ -13,10 +13,14 @@ Thank you for your interest. This guide explains how the code works, how to run 
 ## Layout
 
 ```
-index.html          the page shell
+index.html          the page shell, the search-engine tags and the about text
+ranked-choice-voting.html  a static guide page (for search engines and teachers)
 styles.css          all styles
-config.js           the default voting-centre address
+config.js           an optional default voting-centre address (empty by default)
 sw.js               a service worker: keeps a copy of the site for offline use (network first)
+favicon.svg, assets/og-image.*  the icon and the social preview image
+robots.txt, sitemap.xml  for search engines
+scripts/            set-site-url.mjs (change the site address), make-og-image.mjs
 js/irv.js           the counting code (pure functions; also used by the tests)
 js/app.js           the pages: routing, forms, booth, admin, results, single-booth poll
 worker/src/index.js the Cloudflare Worker (the API)
@@ -37,24 +41,26 @@ npm run dev:worker     # terminal 1: Worker on http://localhost:8787
 npm run dev:site       # terminal 2: site on http://localhost:8000
 ```
 
-Open `http://localhost:8000`. With the default `config.js` (`http://localhost:8787`), the site finds the local Worker.
+Open `http://localhost:8000`. `config.js` is empty, so click **Make a multi-booth poll** and connect to `http://localhost:8787` on the Connect page. Leave the organiser code empty, unless your local Worker has one. The site remembers the address in that browser.
 
 Notes:
 - `wrangler.toml` may allow only your real site (`ALLOWED_ORIGIN`). For local runs, make `worker/.dev.vars` with `ALLOWED_ORIGIN=*`. Wrangler uses it for `wrangler dev` only. Git ignores it.
 - The local database is in `worker/.wrangler/`. To reset it: `rm -rf worker/.wrangler && npm run db:local`.
-- `npm run dev:worker` listens on all network interfaces, so that a phone on your Wi-Fi can reach it. To test on a phone, set `config.js` to `http://<your-computer-ip>:8787`, and open `http://<your-computer-ip>:8000` on the phone. Put the file back before you commit.
+- `npm run dev:worker` listens on all network interfaces, so that a phone on your Wi-Fi can reach it. To test on a phone, open `http://<your-computer-ip>:8000` on the phone, and connect to `http://<your-computer-ip>:8787` on the Connect page.
 - The site registers a service worker. It tries the network first, so a changed file is never hidden. If a page looks stale, do a hard refresh (Ctrl+Shift+R).
 - `worker/.env` (see `worker/.env.example`) holds your Cloudflare token and organiser code. Never commit it.
 
 ## Tests
 
 ```sh
-npm test               # unit tests for the count (fast)
+npm test               # unit tests for the count and the search-engine tags (fast)
 npm run test:browser   # browser-flow tests: starts a local Worker and a temporary database
 npm run test:all       # both
 ```
 
 **Unit tests** (`test/irv.test.mjs`) cover the instant-runoff count, ties, parts of a vote, show-of-hands estimates and the "every group is one vote" method.
+
+**Search-engine tests** (`test/seo.test.mjs`) check the title and description lengths, the canonical and social tags, the structured data, that links point to real files, and that `sitemap.xml` and `robots.txt` use the same site address.
 
 **Browser-flow tests** (`test/browser/`) run the real page code in [jsdom](https://github.com/jsdom/jsdom) against a real local Worker. The runner (`run-all.mjs`) makes a temporary database, starts `wrangler dev` on port 8788 with the organiser code `abc123`, runs each suite, and stops the Worker. You can change the port with `QUICK_VOTE_TEST_PORT`.
 
@@ -153,6 +159,10 @@ A ballot has the ranking, the group name, a random booth ID and a client ID. The
 
 Group names are compared without regard to capital letters and spaces at the ends.
 
+### Search engines
+
+Search engines do not read the `#/...` addresses of the app. They read `index.html` and `ranked-choice-voting.html`. So the real page text (the intro, the explanation and the questions) is in the HTML, and not only made by JavaScript. The `about` section shows on the home view only: `route()` sets `data-view` on `<body>`, and the CSS hides the section on other views. Keep one `<h1>` on each page. When you change a title or a description, run `npm test`: it checks the lengths.
+
 ## Conventions
 
 - Escape every piece of user text with `esc()`. Accept pictures only through `safeImg()` (data URLs that start with `data:image/`).
@@ -169,6 +179,8 @@ Group names are compared without regard to capital letters and spaces at the end
 3. Make the change. Run `npm run test:all`. All tests must pass.
 4. Update `README.md`, `INSTALLING.md` or this file if the change needs it.
 5. Open a pull request. Say what changed and why. Say how you tested it, and on which devices or browsers if the change affects the pages.
+
+By sending a change, you agree that your work is under the [MIT licence](LICENSE), like the rest of the project.
 
 Never commit `.env`, `.dev.vars`, a token or a password. To report a security problem, use GitHub's private security advisory for the repository. Do not post it in a public issue.
 

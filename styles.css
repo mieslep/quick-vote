@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap');
-
 :root {
   color-scheme: light;
   --leaf: #405c3d;
@@ -32,7 +30,7 @@ h1, h2, h3 { font-family: var(--display); color: var(--leaf-dark); margin: 0 0 .
 h1 { font-size: clamp(2rem, 6vw, 3rem); }
 p { line-height: 1.5; }
 
-.site-header { max-width: 1100px; margin: 0 auto; padding: 14px 20px; }
+.site-header { max-width: 1100px; margin: 0 auto; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .brand { display: inline-flex; gap: 9px; align-items: center; text-decoration: none; font: 700 1.3rem var(--display); color: var(--leaf-dark); }
 main { max-width: 1100px; margin: 0 auto; padding: 8px 20px 60px; }
 
@@ -148,3 +146,20 @@ legend { font-weight: 800; padding: 0 6px; }
 .mypolls { list-style: none; padding: 0; margin: 0; }
 .mypolls li { padding: 10px 0; border-bottom: 1px solid var(--line); }
 .mypolls .row-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+
+.site-nav { display: flex; gap: 16px; flex-wrap: wrap; font-size: .95rem; }
+.site-nav a { color: var(--leaf-dark); }
+body.booth-mode .site-nav { display: none; }
+
+/* The about text: real page text for search engines. It shows on the home view only. */
+.about, .site-footer, .page { max-width: 760px; margin: 0 auto; padding: 8px 20px 24px; }
+.about h2, .page h2 { font-size: 1.4rem; margin-top: 1.6em; }
+.about p, .about li, .page p, .page li { line-height: 1.6; }
+.about details { border-bottom: 1px solid var(--line); padding: 8px 0; }
+.about summary, .page summary { cursor: pointer; font-weight: 700; }
+.site-footer { font-size: .9rem; color: var(--muted); padding-bottom: 48px; }
+body[data-view]:not([data-view="home"]) .about,
+body[data-view]:not([data-view="home"]) .site-footer { display: none; }
+.page h1 { margin-top: .6em; }
+.page table { margin: 1em 0; }
+.page .cta { margin: 1.5em 0; }
