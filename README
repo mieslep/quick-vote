@@ -127,6 +127,9 @@ Then:
 
 ## Run on your own computer
 
+`worker/wrangler.toml` allows only the Pages site (`ALLOWED_ORIGIN`). For local runs, make `worker/.dev.vars` with the line `ALLOWED_ORIGIN=*`. Wrangler uses it for `wrangler dev` only. Git ignores it. Put the Cloudflare account ID, the API token and the organiser code in `worker/.env` (see `worker/.env.example`). Use an Account API token (Manage account, Account API tokens) with Workers Scripts: Edit, D1: Edit and Account Settings: Read.
+
+
 ```sh
 npm install
 npm run db:local       # first time only: makes the local database

@@ -6,10 +6,10 @@ compatibility_date = "2025-01-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "quick-vote"
-database_id = "REPLACE_WITH_DATABASE_ID"
+database_id = "58293b60-67a3-44c8-b543-1fe2f46ac6eb"
 
 [vars]
 # Set to your GitHub Pages origin, for example "https://phil.github.io".
-ALLOWED_ORIGIN = "*"
+ALLOWED_ORIGIN = "https://mieslep.github.io"
 # Optional secret: `npx wrangler secret put CREATE_CODE`.
 # When set, a person must enter this code to create a poll.
