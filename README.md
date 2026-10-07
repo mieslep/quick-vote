@@ -1,148 +1,92 @@
 # Quick Vote
 
-A small ranked-choice polling app. The site is static (GitHub Pages). A Cloudflare Worker and a D1 database store the polls and ballots.
+Ranked-choice voting for classes, clubs, teams and events. No accounts. No app to install.
+
+Quick Vote lets a group choose between options fairly. Each voter ranks the choices: first, second, third. The app then counts the votes with *instant runoff*, and shows every round, so everyone can see how the winner came about.
+
+Use it to choose:
+- a class project topic, a field trip or a party menu;
+- a name for a team, a club or a product;
+- a date, a venue or a prize.
+
+## Why ranked-choice?
+
+With a normal vote, each person picks one option. Similar options split the vote, and the winner can be a choice that most people did not want.
+
+With ranked-choice voting, a voter says which option they like best, and which they like next. If the voter's first choice cannot win, the vote moves to the voter's next choice. The winner is an option that a majority of voters can accept. A voter never has to guess a "safe" choice.
+
+**Example.** Twelve voters, three options. The first-choice votes are Pizza 5, Pasta 4 and Tacos 3. Nobody has more than half (7). Tacos has the fewest, so Tacos is out. The three voters who chose Tacos first all ranked Pasta second, so their votes move to Pasta. Pasta now has 7 of 12 and wins, even though Pizza had the most first-choice votes. The round-by-round view shows each step.
 
 ## Two ways to use it
 
-**Single-booth poll** (button "Make a single-booth poll"). The whole poll runs on one device.
-- Nothing is sent to a server. The poll, the votes and the result stay in that browser.
-- It needs no back end. The site itself must load once. After that, the site opens with no network (see "Offline").
-- Voters rank the choices on the device.
-- The person who makes the poll sets a password to close voting. The password is required. It is a local password, saved on that device only. It protects "Close voting", "Reopen voting" and "Delete this poll". Keep it from the voters.
-- "Download votes (CSV)" saves the ballots. Clearing the browser data deletes the poll, so download the CSV or note the result.
-- The poll is not shared. Another device cannot open it.
+| | Single-booth poll | Multi-booth poll |
+|---|---|---|
+| Good for | One class or one room | Many classes, rooms or sites |
+| Voters use | One shared device | A device in each group |
+| Needs a server | No | Yes (a Cloudflare account; the free plan is usually enough) |
+| Needs a network | Only to load the site once | Each booth needs a signal to open and to send votes |
+| Result | On the device | The total of all booths, with a result for each booth |
+| Set up | None | About 20 minutes, once: see [INSTALLING.md](INSTALLING.md) |
 
-**Multi-booth poll** (button "Make a multi-booth poll"). Many groups vote on their own devices. A voting centre adds up all the booths.
-- It needs the back end (the Cloudflare Worker and the database). The steps are below in "Set up the back end".
+### Single-booth poll
 
-### Step by step: a multi-booth poll
+Click **Make a single-booth poll**. Enter the question and the choices. Add a picture to a choice if you like. Choose a password to close voting.
 
-1. Set up the back end once (see "Set up the back end"). Publish the site on GitHub Pages.
-2. Open the site. Click "Make a multi-booth poll". The first time, the site asks you to connect: enter the Worker address and the organiser code (see "Connect to a voting centre"). Then enter the question, the choices (pictures are optional), the number of ranks and the booth password.
-3. Save the admin link. It is shown once. It is the only way to see the results.
-4. Send the booth link to one leader in each group. Send the booth password in a separate message.
-5. Each leader opens the link on a phone or a computer, while the device has a signal. The leader enters a group name and the password, and picks how the group votes (ranked ballots or show of hands).
-6. Voting happens at each booth. A booth with no signal saves its votes and sends them later.
-7. Each leader presses "Finish voting here" (ranked) or sends the totals (show of hands). The booth shows its own result.
-8. On the admin page, press "Close voting". Wait until every booth shows "All received".
-9. Press "Finalise results". Tick the share box to show the overall result on the booths and on a public link.
+Pass the device around. Each voter taps the choices in order and presses **Cast my vote**. When everyone has voted, you press **Close voting and show the result** and type the password.
 
-### Connect to a voting centre
+- Nothing leaves the device. The poll, the votes and the result stay in the browser.
+- It works with no network, after the site has loaded once.
+- You can download the votes as a CSV file, reopen voting, or delete the poll. Each of these needs the password.
+- Clearing the browser data deletes the poll. Download the CSV first, if you need a record.
 
-- The "Connect" page (`#/connect`) takes the Worker address and the organiser code. It tests both before it saves them.
-- The address and the code stay in this browser. The code only lets this browser make new polls. It does not open polls that already exist.
-- With the code saved, the make-a-poll form does not ask for it again.
-- After you make a poll, this browser saves its admin link. The home page lists "Your multi-booth polls". Anyone who uses the browser can open these links. The link shown after you make a poll is still the only other copy.
-- The booth, admin and results links carry the voting-centre address (`?api=...`). A leader can open a booth link on any device with no setup.
-- A link with an address that the browser does not know shows a question first: "Connect to this voting centre?" It shows the address, and the browser sends nothing until the person agrees. This protects against a false link that would steal the booth password.
-- `config.js` is only the default address. Leave it empty on a public copy of the site, so that each person connects to their own voting centre.
-- The Worker must allow the site. Set `ALLOWED_ORIGIN` in `worker/wrangler.toml` to the site address, for example `https://phil.github.io`, or leave it as `*`.
+### Multi-booth poll
 
-### Offline
+Many groups vote at the same time, each on its own device. A server that you control (the *voting centre*) adds up all the votes.
 
-- The site saves its own files in the browser on the first visit (`sw.js`). The service worker works on `https://` pages and on `localhost`.
-- After that visit, the site opens with no network. A single-booth poll then works fully.
-- A multi-booth booth needs a signal when the leader first opens it, and to send votes. It can run with no signal in between.
+1. **Set up once.** Follow [INSTALLING.md](INSTALLING.md). It takes about 20 minutes. It needs a Cloudflare account. The free plan is usually enough.
+2. **Connect.** Open the site. Click **Make a multi-booth poll**. The first time, the site asks for the voting-centre address and the organiser code. The site saves them in your browser.
+3. **Make the poll.** Enter the question, the choices, how many choices a voter can rank, and a booth password. Choose how long a booth may stay open (the default is 2 hours).
+4. **Share.** Send the booth link to one *booth host* in each group, for example a teacher or a team leader. Send the booth password in a separate message.
+5. **Open a booth.** Each booth host opens the link on a phone, a tablet or a computer. The host enters a group name and the password. The host chooses how the group votes:
+   - 🗳️ Each voter ranks the choices on the device.
+   - ✋ The host counts hands and enters one total for each choice.
+6. **Vote.** A booth with no signal saves its votes on the device. It sends them when the signal returns. The booth says clearly when votes have not yet reached the voting centre.
+7. **Finish.** Each host presses **Finish voting here** (with the booth password). The booth shows its own result. Later it also shows the overall result, when you share it.
+8. **Close.** On the admin page, press **Close voting**. The booths stop taking new votes. A ballot that was cast before the close still counts when it arrives later. The admin page shows how many ballots each booth cast and how many arrived.
+9. **Finalise.** When every booth shows "All received", press **Finalise results**. Tick the box to share the overall result on the booths and on a public link.
 
-## How a multi-booth poll works
+The home page lists the polls that you made in this browser, with their state (open, closed or final). Click one to return to its admin page.
 
-1. An organiser makes a poll: a question, 2 to 12 choices (name and optional picture), how many choices a voter can rank, and a booth password.
-2. The organiser gets a booth link and a private admin link.
-3. A leader in each group opens the booth link and enters the booth password and a group name. That device is now a polling booth.
-4. Each voter taps the choices in order (1, 2, 3 ...) and casts the vote. The ballot has no voter identity.
-5. A booth with no signal saves ballots on the device and sends them later. A booth needs a signal when the leader first opens it.
-6. The organiser presses "Close voting". Booths stop taking new votes. A ballot that was cast before the close still counts when it arrives later.
-7. The admin page shows each booth: ballots received and ballots cast on the device. A booth with a gap still has ballots to send. The results are provisional.
-8. When every booth shows "All received", the organiser presses "Finalise results". The server then refuses all later ballots. The organiser can share the results by link and download a CSV.
+## What it can do
 
-Ballots stay hidden from the admin page until voting closes.
+- **Pictures are optional.** A choice can have a photo, or only a name.
+- **Round-by-round results** with a bar for each choice, so the count is easy to follow.
+- **Offline voting.** Booths keep working with a weak signal, and the page shows plainly when votes are only on the device.
+- **Close and finalise.** Late booths do not lose votes that were cast in time.
+- **Show of hands.** A group that cannot vote on a device can count hands. You choose whether the app counts only the first choice, or also estimates the later choices from the ranked ballots of the other groups. The result page says when it used an estimate.
+- **Count method.** Every ballot is one vote, or every group is one vote.
+- **Groups with no device.** You can enter hand-count totals for a group yourself.
+- **Booth time window.** A booth can start later (within 24 hours) and close itself after a set time.
+- **CSV download** of the ranked ballots.
 
-## Booth results
+## Privacy
 
-- A leader presses "Finish voting here" and confirms. The booth stops taking votes.
-- The booth then shows how many votes it cast and a small instant-runoff count of its own votes. The booth window ending by itself shows the same page.
-- The booth keeps its own ballots on the device for this page. Ballots still send to the server. "Delete this booth" (with the booth password) deletes the local copy. It is refused while votes are still waiting to send.
-- A booth result can differ from the overall result.
+- A ballot holds the ranking, the group name and a random ID of the booth device. It holds no voter name and no time of day.
+- The server does not keep the cast time of a ballot. It uses the time once, to decide whether the ballot came before the poll closed.
+- The admin page cannot see any ballot until voting closes.
+- The admin key and the booth password are stored on the server only as hashes.
+- The app has no tracking and no accounts. The site loads two fonts from Google Fonts. You can remove them in `styles.css`.
 
-## Show of hands
+Anyone who has the booth link and the password can cast ballots. The app does not stop one person from voting twice. The booth host watches the booth, as at a real polling station.
 
-- When a leader opens a booth, the leader picks how the group votes:
-  - 🗳️ Each cub casts a ranked vote on the device.
-  - ✋ The leader counts hands and enters one total for each choice. The leader sends the totals. The leader can change them until voting closes.
-- Totals use the same offline and late-ballot rules as ranked ballots. The device keeps unsent totals and warns that they have not reached the voting centre.
-- A show of hands gives the first choice only. The admin page has a setting for this under "Show-of-hands groups":
-  - Count the first choice only. A hand stops counting when its choice is out.
-  - Estimate later choices from the ranked ballots. For each first choice, the app finds the ranked ballots with the same first choice. It copies how they rank the later choices. The hands are split in the same proportions. A show of 6, 4 and 2 hands is split this way. The result page says when it used an estimate.
-- The estimate is a guess based on other groups. It is only as good as the ranked ballots. With no ranked ballots for a first choice, those hands count as first choice only.
-- Result pages list each group with 🗳️ (ranked ballots) or ✋ (show of hands).
+## Limits
 
-## Groups with no booth, and the count method
+- Counts are instant-runoff. Other methods (Borda, Condorcet) are not offered.
+- A booth needs a signal when the host first opens it, and to send votes. It can run with no signal in between.
+- A booth result on a device can differ from the overall result. This is normal.
+- Instant runoff settles a tie for last place by looking at earlier rounds. If all earlier rounds are equal, the last choice in the poll list is out. [DEVELOPING.md](DEVELOPING.md) has the exact rule.
 
-- On the admin page, "Groups counted by hand" takes first-preference counts for a group that did not use a booth. Use the same group name as a booth to add to that group.
-- Under "How votes are counted" the organiser picks one method:
-  - Every ballot is one vote. All ballots pool together. A hand count adds one-choice ballots.
-  - Every group is one vote. Each group is counted on its own first. Its full order of choices is then its single ballot. A tie inside a group is settled by the poll list order.
-- Groups with the same name, ignoring capital letters, are one group. Spell a group name the same way on each booth.
-- The method and the hand counts can change until the poll is final. The public results page uses the method that is saved at that time.
+## More
 
-## Booth time window
-
-- The organiser sets the longest time a booth stays open, in minutes (default 120). An empty value means no limit.
-- When a leader opens a booth, the leader picks "Now" or a later start time within 24 hours.
-- The booth locks itself when the window ends. It still sends the ballots that are waiting.
-- The booth window uses the corrected server clock, so a wrong device clock does not matter.
-- The admin page shows the window of each booth. The server does not enforce the window. The booth device enforces it.
-- A leader can close a booth and open it again. This gives a new window and a new row on the admin page.
-
-## How late ballots work
-
-- Each booth keeps a clock offset from the server and uses it to stamp a ballot with its cast time. A wrong device clock does not matter.
-- The server compares the cast time with the close time. It does not store the cast time, so a stored ballot holds only the ranking and the group name.
-- Each booth also reports its total of ballots cast. The admin page compares this with the ballots received.
-- A booth that casts a ballot after the close, with no signal, learns this at its next contact. It shows a count of ballots that were not counted.
-
-## Files
-
-- `index.html`, `styles.css`, `config.js`, `js/` : the site (no build step).
-- `js/irv.js` : the counting code. Run the tests with `npm test`.
-- `worker/` : the Cloudflare Worker (`src/index.js`), the database schema and `wrangler.toml`.
-
-## Set up the back end
-
-```sh
-npm install
-cd worker
-npx wrangler login
-npx wrangler d1 create quick-vote          # copy the database_id into wrangler.toml
-npx wrangler d1 execute quick-vote --remote --file=schema.sql
-npx wrangler secret put CREATE_CODE        # optional: stops strangers from making polls
-npx wrangler deploy                        # prints the Worker URL
-```
-
-Then:
-
-1. Put the Worker URL in `config.js` (`window.QUICK_VOTE_API`) as the default. You can also leave it empty and use the Connect page.
-2. Set `ALLOWED_ORIGIN` in `worker/wrangler.toml` to your Pages origin, for example `https://phil.github.io`. Deploy again.
-3. Commit, push, and turn on GitHub Pages for the repository root.
-
-## Run on your own computer
-
-`worker/wrangler.toml` allows only the Pages site (`ALLOWED_ORIGIN`). For local runs, make `worker/.dev.vars` with the line `ALLOWED_ORIGIN=*`. Wrangler uses it for `wrangler dev` only. Git ignores it. Put the Cloudflare account ID, the API token and the organiser code in `worker/.env` (see `worker/.env.example`). Use an Account API token (Manage account, Account API tokens) with Workers Scripts: Edit, D1: Edit and Account Settings: Read.
-
-
-```sh
-npm install
-npm run db:local       # first time only: makes the local database
-npm run dev:worker     # terminal 1: Worker on http://localhost:8787
-npm run dev:site       # terminal 2: site on http://localhost:8000
-```
-
-## Counting rule
-
-Instant runoff. Each round counts the first remaining choice on every ballot. A choice with more than half of the counted ballots wins. If none has, the choice with the fewest ballots is out. A tie for last place is settled by the most recent earlier round where the tied choices differed. If all earlier rounds are equal, the last choice in the poll list is out.
-
-## Security notes
-
-- The booth password is stored as a salted PBKDF2 hash. A booth device keeps the password in browser storage until the booth is closed. Use a device you trust.
-- The admin key is in the URL fragment. It is not sent to any server except in the request header. It is stored only as a hash.
-- Anyone who has the booth link and password can cast ballots. The app does not stop one voter from voting twice. The leader at the booth does that.
+- [INSTALLING.md](INSTALLING.md): set up your own voting centre on Cloudflare, step by step.
+- [DEVELOPING.md](DEVELOPING.md): how the code works, how to run the tests, and how to contribute.
