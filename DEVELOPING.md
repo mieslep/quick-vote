@@ -93,7 +93,7 @@ If a test run leaves a Worker behind ("Address already in use"), find it with `s
 | `#/admin/<id>/<key>` | The admin page |
 | `#/results/<id>` | The public results |
 
-A link can end with `?api=<voting-centre address>`. `selectApi()` accepts the address only if the browser already knows it. Otherwise it shows a trust question and sends no request. This prevents a false link from collecting a booth password.
+A link can end with `?api=<voting-centre address>`. `selectApi()` checks that the address is valid, uses it, and saves it for that poll.
 
 **`route()` and the start call must stay at the end of `app.js`.** The pages use `const` values that the file sets up in order. A start call that runs earlier fails on a page that is opened directly from a link.
 
@@ -102,7 +102,6 @@ A link can end with `?api=<voting-centre address>`. `selectApi()` accepts the ad
 | Key | Content |
 |---|---|
 | `qv:settings` | The voting-centre address and the organiser code for this browser |
-| `qv:trusted` | Addresses that the person agreed to trust |
 | `qv:mypolls` | Multi-booth polls that this browser made, with their admin keys |
 | `qv:<pollId>:api` | The voting-centre address for that poll |
 | `qv:<pollId>:session` | The booth session: password, group name, booth ID, mode, window |

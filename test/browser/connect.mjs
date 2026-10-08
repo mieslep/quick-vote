@@ -5,7 +5,7 @@ import { API, CODE, createHarness, sleep } from './helpers.mjs';
 const HOST = new URL(API).host;
 const ENCODED = encodeURIComponent(API);
 const h = createHarness({ configApi: '' });
-const { openPage, q, t, submit, check, post, storageOf, fetched } = h;
+const { openPage, q, t, submit, check, post, storageOf } = h;
 
 async function connectWith(w, address, code) {
   w.location.hash = '#/connect';
@@ -77,42 +77,30 @@ await sleep(500);
 q(w1b, '[data-forget]').click();
 check('remove takes the poll off the list', !q(w1b, '.mypolls') && JSON.parse(w1b.localStorage.getItem('qv:mypolls')).length === 0);
 
-// 6. A different device opens the booth link. It must confirm the address first.
+// 6. A different device opens the booth link. It connects at once.
 const boothHash = boothLink.slice(boothLink.indexOf('#'));
-const before = fetched.length;
 const w2 = openPage(`http://localhost:8000/${boothHash}`);
-await sleep(500);
-check('an unknown address asks for trust', t(w2, 'h1') === 'Connect to this voting centre?' && t(w2, '.card').includes(HOST));
-check('no request before the person agrees', fetched.length === before, String(fetched.length - before));
-q(w2, '#trust').click();
 await sleep(800);
+check('an unknown address needs no question', !q(w2, '#trust'));
 check('booth login page loads', t(w2, 'h1') === 'Class party menu', t(w2, 'h1'));
 const saved2 = storageOf(w2);
 check('the address is remembered for the poll', Object.values(saved2).includes(JSON.stringify(API)));
 
-// 7. The same device opens the link again: no question
+// 7. The same device opens the link again
 const w3 = openPage(`http://localhost:8000/${boothHash}`, saved2);
 await sleep(700);
-check('no question the second time', t(w3, 'h1') === 'Class party menu', t(w3, 'h1'));
+check('the second visit loads', t(w3, 'h1') === 'Class party menu', t(w3, 'h1'));
 
 // 8. The admin link on a new device
 const adminHash = adminLink.slice(adminLink.indexOf('#'));
 const w4 = openPage(`http://localhost:8000/${adminHash}`);
-await sleep(400);
-check('the admin link also asks', t(w4, 'h1') === 'Connect to this voting centre?');
-q(w4, '#trust').click();
 await sleep(900);
 check('admin page loads', t(w4, 'h1') === 'Class party menu', t(w4, 'h1'));
 
 // 9. Bad and unknown addresses in a link
-const mark = fetched.length;
 const w5 = openPage('http://localhost:8000/#/p/abcdefgh?api=javascript%3Aalert(1)');
 await sleep(300);
 check('a bad address is refused', t(w5, 'h1') === 'Something went wrong' && t(w5, '.card').includes('not valid'));
-const w6 = openPage('http://localhost:8000/#/p/abcdefgh?api=http%3A%2F%2Fevil.example');
-await sleep(300);
-check('an unknown host is shown to the person', t(w6, '.card').includes('evil.example') && !!q(w6, '#trust'));
-check('no request went to the unknown host', !fetched.slice(mark).some((u) => u.includes('evil.example')));
 
 // 10. Pasting a full link into "Open a booth" keeps the address
 const w7 = openPage('http://localhost:8000/');

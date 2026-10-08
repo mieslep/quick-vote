@@ -116,7 +116,7 @@ function showFailure(err) {
     <div class="row"><a class="button" href="#/">Go to the start</a></div></section>`);
 }
 
-// A link can carry a voting-centre address. Use it only if this browser already knows it, or the person trusts it.
+// A link can carry a voting-centre address. Use it, and remember it for the poll.
 function selectApi(id, params) {
   const raw = params.get('api');
   const fromLink = raw ? cleanBase(raw) : '';
@@ -125,32 +125,9 @@ function selectApi(id, params) {
     return false;
   }
   const known = store(`qv:${id}:api`);
-  const trusted = store('qv:trusted') || [];
-  if (fromLink && ![known, CONFIG_API, settings().apiBase, ...trusted].includes(fromLink)) {
-    showTrust(id, fromLink);
-    return false;
-  }
   if (fromLink) store(`qv:${id}:api`, fromLink);
   apiBase = fromLink || known || settings().apiBase || CONFIG_API;
   return true;
-}
-
-function showTrust(id, base) {
-  show(`
-    <section class="card narrow">
-      <h1>Connect to this voting centre?</h1>
-      <p>This link wants to use the voting centre at</p>
-      <p><b>${esc(hostOf(base))}</b></p>
-      <p class="error">Continue only if you know and trust this address. You will type a password on this page. A false address can steal it.</p>
-      <div class="row">
-        <button class="button" type="button" id="trust">Continue</button>
-        <a class="button secondary" href="#/">Cancel</a>
-      </div>
-    </section>`);
-  document.getElementById('trust').addEventListener('click', () => {
-    store('qv:trusted', [...(store('qv:trusted') || []), base]);
-    route();
-  });
 }
 
 function route() {
