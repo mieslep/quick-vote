@@ -19,6 +19,8 @@ const url = `http://localhost:8000/#/p/${id}`;
 // 1. Log in on a fresh page load.
 const w = openPage(url);
 await sleep(700);
+check('poll shown before voting', !q(w, '#booth-form') && !!q(w, '#open-voting'));
+q(w, '#open-voting').click();
 q(w, '#booth-name').value = 'Class 1';
 q(w, '#booth-pass').value = 'secret';
 submit(w, '#booth-form');
@@ -67,6 +69,8 @@ check('server received 2 ballots', (await get(`/api/polls/${id}/admin`, adminKey
 // 6. A second booth uses a show of hands.
 const wh = openPage(url);
 await sleep(700);
+check('poll shown before voting', !q(wh, '#booth-form') && !!q(wh, '#open-voting'));
+q(wh, '#open-voting').click();
 q(wh, '#booth-name').value = 'Class 3';
 q(wh, '#booth-pass').value = 'secret';
 q(wh, 'input[name=mode][value=hands]').checked = true;
@@ -107,6 +111,9 @@ await post(`/api/polls/${id}/close`, {}, adminKey);
 w.dispatchEvent(new w.Event('online'));
 await sleep(1000);
 check('closed message', t(w, '#overall').includes('waiting for every booth'), t(w, '#overall'));
+const wc = openPage(url);
+await sleep(900);
+check('closed poll page has no open voting button', !q(wc, '#open-voting') && t(wc, '.card').includes('Voting has closed'), t(wc, '.card').slice(0, 80));
 await post(`/api/polls/${id}/finalize`, {}, adminKey);
 w.dispatchEvent(new w.Event('online'));
 await sleep(1000);
@@ -137,16 +144,11 @@ const w4 = openPage(url, old);
 await sleep(1800);
 check('an older saved session still shows the overall result', t(w4, '#overall').includes('Final order'), t(w4, '#overall').slice(0, 80));
 
-// 10. A new device logs in after the poll is final.
+// 10. A new device opens the link after the poll is final. It sees the poll and the overall result.
 const w3 = openPage(url);
-await sleep(700);
-q(w3, '#booth-name').value = 'Class 2';
-q(w3, '#booth-pass').value = 'secret';
-submit(w3, '#booth-form');
 await sleep(1500);
-check('new device sees the summary', t(w3, '.card h2') === 'Our booth result');
-check('new device has no local votes', t(w3, '.card').includes('No votes were cast at this booth on this device'));
-check('new device sees the overall result', t(w3, '#overall').includes('Final order'));
+check('final poll page has no open voting button', !q(w3, '#open-voting') && !q(w3, '#booth-form'));
+check('new device sees the overall result', t(w3, '#poll-result').includes('Final order'), t(w3, '#poll-result').slice(0, 80));
 
 // 11. Delete the booth. The password is required.
 q(w, '#forget').click();

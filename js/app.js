@@ -519,12 +519,39 @@ async function booth(id) {
   const session = store(boothKey(id));
   if (session) return runBooth(id, session);
 
-  let title = 'Polling booth';
+  let poll = { title: 'Polling booth', description: '', choices: [] };
   try {
-    title = (await api(`/api/polls/${id}`)).title;
+    poll = await api(`/api/polls/${id}`);
   } catch (err) {
     if (err.status === 404) return show('<section class="card narrow"><h1>Poll not found</h1><p>Check the link.</p></section>');
   }
+  const choices = poll.choices || [];
+  show(`
+    <section class="card narrow">
+      <h1>${esc(poll.title)}</h1>
+      ${poll.description ? `<p class="muted">${esc(poll.description)}</p>` : ''}
+      ${choices.length ? `<h2>Choices</h2>
+      <ul class="poll-choices">${choices.map((c) => `<li>${safeImg(c.image) ? `<img src="${safeImg(c.image)}" alt="">` : ''}<span>${esc(c.label)}</span></li>`).join('')}</ul>` : ''}
+      ${poll.status === 'open' ? '<div class="row"><button class="button big" type="button" id="open-voting">Open voting</button></div>' : ''}
+      ${poll.status === 'closed' ? '<p class="notice">Voting has closed. The organiser is waiting for every booth to send its votes.</p>' : ''}
+    </section>
+    <section class="card narrow" id="poll-result" hidden></section>`);
+  const openBtn = document.getElementById('open-voting');
+  if (openBtn) openBtn.addEventListener('click', () => boothSetup(id, poll.title));
+  if (poll.status !== 'final') return;
+  const box = document.getElementById('poll-result');
+  try {
+    const overall = await api(`/api/polls/${id}/results`);
+    box.innerHTML = `<h2>Overall result</h2>${resultsHtml(overall, overall.ballots, overall.manual, overall.countMode, overall.handsMode)}`;
+  } catch (err) {
+    box.innerHTML = err.status === 403
+      ? '<h2>Overall result</h2><p class="muted">The organiser has not shared the overall result yet. Open this page again later.</p>'
+      : `<h2>Overall result</h2><p class="muted">The overall result could not load. ${err.offline ? 'This device may be offline.' : esc(err.message)}</p>`;
+  }
+  box.hidden = false;
+}
+
+function boothSetup(id, title) {
   show(`
     <section class="card narrow">
       <h1>${esc(title)}</h1>
